@@ -1,0 +1,11 @@
+{
+  "name": "contracts",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "https://github.com/gulshanpr/anything-intent-composable.git",
+  "author": "gulshanpr <gulshankumarprasad@proton.me>",
+  "license": "MIT",
+  "dependencies": {
+    "@hyperlane-xyz/cli": "^9.2.1"
+  }
+}
