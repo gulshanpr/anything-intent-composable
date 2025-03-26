@@ -1,6 +1,6 @@
 {
-    "caff_node_url": "http://YOUR_HOST:8550",
+    "caff_node_url": "http://localhost:8550",
     "polling_interval": 1,
     "value": 1,
-    "from": "0x0000000000000000000000000000000000000000"
+    "from": "0x85a883834a23181dF19dA3ffAeeE2e3A21703457"
 }
