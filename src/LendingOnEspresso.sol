@@ -5,7 +5,7 @@ import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import {SETHToken} from "./SETHToken.sol";
 import {SUSDXToken} from "./SUSDXToken.sol";
 
-contract LendingBorrowing is Ownable {
+contract LendingOnEspresso is Ownable {
     address public sETHTokenContract;
     address public sUSDXTokenContract;
     mapping(address => bool) public allowedTokens;
@@ -17,12 +17,13 @@ contract LendingBorrowing is Ownable {
     // for balance of sToken use balanceOf function
     // on dest chain check for deposited token type? ETH or USDC/USDT
 
-    event DepositETH(address indexed from, uint256 amount, uint256 mintedToken);
+    event DepositETH(address indexed from, uint256 amount, uint256 mintedToken, address destContract, uint256 destChainId);
     event DepositedERC20(
         address indexed from,
         address indexed token,
         uint256 amount,
-        uint256 mintedToken
+        uint256 mintedToken,
+        address destContract, uint256 destChainId
     );
     event WithdrawETH(address indexed to, uint256 amount, uint256 burnedToken);
     event WithdrawERC20(
@@ -44,7 +45,7 @@ contract LendingBorrowing is Ownable {
     /* need to add chainlink pricefeed for minting equivalent amount of sToken 
     (this is only possible in chainlink registered chain)
     */
-    function depositETH() public payable {
+    function depositETH(address _destContract, uint256 _destChainId) public payable {
         require(msg.value > 0, "Amount less than minimum amount");
 
         ethDepositByUser[msg.sender] += msg.value;
@@ -57,7 +58,7 @@ contract LendingBorrowing is Ownable {
 
         require(isMinted, "Token minting was not successful");
 
-        emit DepositETH(msg.sender, msg.value, mintedToken);
+        emit DepositETH(msg.sender, msg.value, mintedToken, _destContract, _destChainId);
     }
 
     /* need to add chainlink pricefeed for minting equivalent amount of sToken 
@@ -65,7 +66,7 @@ contract LendingBorrowing is Ownable {
 
     * only USDC/USDT is whitelisted for now
     */
-    function depositERC20(address _token, uint256 _amount) public {
+    function depositERC20(address _token, uint256 _amount, address _destContract, uint256 _destChainId) public {
         // **make sure to pass the _amount in wei**
         require(_amount > 0, "Amount less than minimum amount");
         require(
@@ -98,7 +99,7 @@ contract LendingBorrowing is Ownable {
 
         require(isMinted, "Token minting was not successful");
 
-        emit DepositedERC20(msg.sender, _token, _amount, mintedToken);
+        emit DepositedERC20(msg.sender, _token, _amount, mintedToken, _destContract, _destChainId);
     }
 
     // to burn token from frontend the approval for spending
@@ -153,7 +154,7 @@ contract LendingBorrowing is Ownable {
         ethDepositByUser[msg.sender] -= _amount;
 
         // _amount should be equal to burnedToken
-        emit WithdrawERC20(msg.sender, _token, _amount, burnedToken);
+        emit WithdrawETH(msg.sender, _amount, burnedToken);
     }
 
     // to burn token from frontend the approval for spending
@@ -219,3 +220,9 @@ contract LendingBorrowing is Ownable {
 
     // add fallback and recieve function to accept eth and usdc in the end
 }
+
+
+
+// Deployer: 0x85a883834a23181dF19dA3ffAeeE2e3A21703457
+// Deployed to: 0x47aF617D9884171d6b8A1e66Dc04fF8094296D67
+// Transaction hash: 0x1c8972482f1e4ad1e8b26ebad6214a14c7a0a1e05c0cd697876abf74f8764716
